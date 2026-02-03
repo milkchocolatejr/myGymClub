@@ -1,4 +1,4 @@
-import sys, util, constants, util
+import sys, util, constants, util, db
 from flask import Flask, request, render_template
 
 #startup Sequence
@@ -13,6 +13,7 @@ app.config['EXPLAIN_TEMPLATE_LOADING'] = ("-d" in sys.argv)
 
 def run():
   util.print_welcome_message()
+  db.init_db()
   app.run(debug=("-d" in sys.argv), port = constants.PORT)
 
 
