@@ -2,7 +2,7 @@ import os, constants
 
 def print_welcome_message():
     print_line()
-    print("Welcome to the Home Listing and Price Explorer!")
+    print("Welcome to myGymClub!")
     print_line()
     print(f"Running on http://127.0.0.1:{constants.PORT}")
     print("Press CTRL + C in the terminal to close this application")
