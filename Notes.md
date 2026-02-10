@@ -6,12 +6,44 @@ The 'runner.py' will execute the 'run' function. This function will start the ap
 
 ## myGymClub.db database reference
 
-The myGymClub.db generated currently includes the table(s):
+The myGymClub.db database generated currently includes the tables:
 
-User_Record:
-    username (TEXT) -> Username of the user
-    password (TEXT) -> Password of the user 
-    isAdmin (INTEGER) -> Number that's either 0 or 1 signaling if a user is an admin or not
+User_Records(username, password, isAdmin):
+
+    username - text
+
+    password - text
+
+    isAdmin - integer
+
+Goals(exercise_name, style, reps, rep_type, sets, frequency, freq_type, memo):
+
+    exercise_name - text not null
+
+    style - text not null
+
+        Habitual
+
+        Progress
+
+    reps - integer
+
+    rep_type - string
+
+        minutes
+
+        miles
+
+    sets - integer
+
+    frequency - integer
+
+    freq_type - text
+
+        day, week, month
+
+    memo - text (optional for user)
+
 
 ## Project Reference
 

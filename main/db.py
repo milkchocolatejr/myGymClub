@@ -9,27 +9,41 @@ def init_db():
 
     print("Initializing database . . .")
 
-    with sqlite3.connect('myGymClub.db') as conn:
+    with sqlite3.connect('myGymClub.db') as conn: # closes the connection automatically when done
         cur = conn.cursor()
         cur.executescript("""
-            CREATE TABLE IF NOT EXISTS User_Record (
+            CREATE TABLE IF NOT EXISTS User_Records (
             username TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL,
             isAdmin INTEGER NOT NULL DEFAULT 0
             );
+                          
+            CREATE TABLE IF NOT EXISTS Goals (
+            exercise_name TEXT NOT NULL,
+            style TEXT NOT NULL CHECK (style IN ('progress', 'habitual')),
+            reps INTEGER NOT NULL,
+            rep_type TEXT NOT NULL CHECK (rep_type IN ('miles', 'minutes')),
+            sets INTEGER NOT NULL,
+            frequency INTEGER NOT NULL,
+            freq_type TEXT NOT NULL CHECK (freq_type IN ('day', 'week', 'month')),
+            memo TEXT
+            );                          
         """)
 
-        cur.execute("DELETE FROM User_Record;") # Resets the User_Record table each time the app is run for testing purposes
-        cur.execute("INSERT INTO User_Record (username, password, isAdmin) VALUES ('admin', 'admin', 1);")
-        conn.commit()
-        conn.close()
+        cur.execute("DELETE FROM User_Records") # Resets the User_Records table each time the app is run for testing purposes
+        cur.execute("DELETE FROM Goals") # Resets the Goals table each time the app is run for testing purposes
+        add_user_record(conn, "admin", "admin", 1) # Adds a default admin user for testing purposes
+        add_goal(conn, "Incline Bench Press", "progress", 10, "minutes", 3, 4, "week", "Focus on form and control!") # Adds a default goal for testing purposes
 
     print("Database initialized successfully!")
 
-def add_user_record(username, password, isAdmin):
-    with sqlite3.connect('myGymClub.db') as conn:
+def add_user_record(conn, username, password, isAdmin):
         cur = conn.cursor()
-        cur.execute(f"INSERT INTO User_Record (username, password, isAdmin) VALUES ('{username}', '{password}', '{isAdmin}');")
+        cur.execute(f"INSERT INTO User_Records (username, password, isAdmin) VALUES ('{username}', '{password}', '{isAdmin}');")
         conn.commit()
-        conn.close()
+
+def add_goal(conn, exercise_name, style, reps, rep_type, sets, frequency, freq_type, memo):
+        cur = conn.cursor()
+        cur.execute(f"INSERT INTO Goals (exercise_name, style, reps, rep_type, sets, frequency, freq_type, memo) VALUES ('{exercise_name}', '{style}', '{reps}', '{rep_type}', '{sets}', '{frequency}', '{freq_type}', '{memo}');")
+        conn.commit()
 
