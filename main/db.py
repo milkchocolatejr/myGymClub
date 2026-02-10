@@ -19,10 +19,17 @@ def init_db():
             );
         """)
 
-    cur.execute("DELETE FROM User_Record;") # Resets the User_Record table each time the app is run for testing purposes
-    cur.execute("INSERT INTO User_Record (username, password, isAdmin) VALUES ('admin', 'admin', 1);") 
-    conn.commit()
-    conn.close()
-    
+        cur.execute("DELETE FROM User_Record;") # Resets the User_Record table each time the app is run for testing purposes
+        cur.execute("INSERT INTO User_Record (username, password, isAdmin) VALUES ('admin', 'admin', 1);")
+        conn.commit()
+        conn.close()
+
     print("Database initialized successfully!")
+
+def add_user_record(username, password, isAdmin):
+    with sqlite3.connect('myGymClub.db') as conn:
+        cur = conn.cursor()
+        cur.execute(f"INSERT INTO User_Record (username, password, isAdmin) VALUES ('{username}', '{password}', '{isAdmin}');")
+        conn.commit()
+        conn.close()
 
