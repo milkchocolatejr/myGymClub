@@ -1,6 +1,7 @@
 import sqlite3
 from pathlib import Path
 
+
 conn = None
 
 # This is where we begin our sql database
@@ -21,9 +22,9 @@ def init_db():
             CREATE TABLE IF NOT EXISTS Goals (
             exercise_name TEXT NOT NULL,
             style TEXT NOT NULL CHECK (style IN ('progress', 'habitual')),
-            reps INTEGER NOT NULL,
-            rep_type TEXT NOT NULL CHECK (rep_type IN ('miles', 'minutes')),
-            sets INTEGER NOT NULL,
+            reps INTEGER,
+            rep_type TEXT CHECK (rep_type IN ('miles', 'minutes')),
+            sets INTEGER,
             frequency INTEGER NOT NULL,
             freq_type TEXT NOT NULL CHECK (freq_type IN ('day', 'week', 'month')),
             memo TEXT
@@ -33,7 +34,7 @@ def init_db():
         cur.execute("DELETE FROM User_Records") # Resets the User_Records table each time the app is run for testing purposes
         cur.execute("DELETE FROM Goals") # Resets the Goals table each time the app is run for testing purposes
         add_user_record(conn, "admin", "admin", 1) # Adds a default admin user for testing purposes
-        add_goal(conn, "Incline Bench Press", "progress", 10, "minutes", 3, 4, "week", "Focus on form and control!") # Adds a default goal for testing purposes
+        add_goal(conn, "Endurance Run", "habitual", None, "miles", None, 4, "week", "Do not stop, keep going !!!!") # Adds a default goal for testing purposes
 
     print("Database initialized successfully!")
 
