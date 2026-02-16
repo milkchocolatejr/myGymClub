@@ -1,5 +1,6 @@
-import sys, util, constants, util, db
-from flask import Flask, request, render_template
+import sys, util, constants, util, db, sqlite3
+from flask import Flask, request, render_template, session, flash, url_for, redirect
+from flask_sqlalchemy import SQLAlchemy
 
 #startup Sequence
 util.clear_terminal()
@@ -17,19 +18,68 @@ def run():
   app.run(debug=("-d" in sys.argv), port = constants.PORT)
 
 
-@app.route('/home', methods=['GET'])
+@app.route('/', methods=['GET'])
 def home():
     return render_template('home.html')
 
-@app.route('/login', methods=['GET'])
-def login():
-    return render_template("login.html")
+@app.route("/login", methods=["POST", "GET"])
+def login(): 
+    if request.method == "POST": #get info and display user page
+        user = request.form["nm"] #nm is dictionary key for username in html page
+        pw = request.form["pw"]
 
-@app.route('/register', methods=['GET'])
+        conn = sqlite3.connect("myGymClub.db")
+        cur = conn.cursor()
+
+        cur.execute( #get entry
+            "SELECT * FROM User_Records WHERE username=? AND password=?",
+            (user, pw)
+        )
+        record = cur.fetchone()
+
+        conn.close()
+
+        if record: #match found
+            return redirect(url_for("user", usr=user)) #redirect to user welcome
+        else: #no entry found
+            flash("Invalid username or password.")
+            return redirect(url_for("login"))
+    return render_template("login.html")
+        
+
+@app.route('/<usr>')
+def user(usr):
+    return f"<h1> Welcome, {usr}</h1>"
+
+@app.route('/register', methods=["POST", 'GET'])
 def register():
-    return render_template("register.html")
+    if request.method == "POST": #get info and display user page
+        user = request.form["nm"] #nm is dictionary key for username in html page
+        pw = request.form["pw"]
+        confirmPW = request.form["pw2"]
+
+        if not user or not pw: #Not null username/password
+            flash("Username and password cannot be empty.")
+            return redirect(url_for("register"))
+
+        elif(pw != confirmPW): #confirm password matches 
+            flash("Passwords do not match", "error")
+            return redirect(url_for("register"))
+        
+        try:
+            conn = sqlite3.connect("myGymClub.db")
+            db.add_user_record(conn, user, pw, 0)  # 0 = not admin
+            conn.close()
+            flash("Account created successfully.")
+            return redirect(url_for("user", usr=user)) #redirect to user welcome
+        except sqlite3.IntegrityError:
+            flash("Username already exists.")
+            return redirect(url_for("register"))
+        
+    else:
+        return render_template("register.html")
 
 
 
 # Finally, run the app
-run()
+app.run()
