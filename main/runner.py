@@ -40,7 +40,7 @@ def login():
         conn.close()
 
         if record: #match found
-            return redirect(url_for("user", usr=user)) #redirect to user welcome
+            return redirect(url_for("home")) #redirect to home
         else: #no entry found
             flash("Invalid username or password.")
             return redirect(url_for("login"))
