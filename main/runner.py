@@ -1,6 +1,5 @@
 import sys, util, constants, util, db, sqlite3
 from flask import Flask, request, render_template, session, flash, url_for, redirect
-from flask_sqlalchemy import SQLAlchemy
 
 #startup Sequence
 util.clear_terminal()
@@ -18,12 +17,17 @@ def run():
   app.run(debug=("-d" in sys.argv), port = constants.PORT)
 
 
-@app.route('/', methods=['GET'])
+@app.route('/')
+def index():
+    return redirect(url_for('login'))
+
+@app.route('/home')
 def home():
-    return render_template('home.html')
+    user = request.args.get("user")
+    return render_template('home.html', user=user)
 
 @app.route("/login", methods=["POST", "GET"])
-def login(): 
+def login():
     if request.method == "POST": #get info and display user page
         user = request.form["nm"] #nm is dictionary key for username in html page
         pw = request.form["pw"]
@@ -40,16 +44,12 @@ def login():
         conn.close()
 
         if record: #match found
-            return redirect(url_for("user", usr=user)) #redirect to user welcome
+            return redirect(url_for("home", user=user)) #redirect to user welcome
         else: #no entry found
             flash("Invalid username or password.")
             return redirect(url_for("login"))
     return render_template("login.html")
-        
 
-@app.route('/<usr>')
-def user(usr):
-    return f"<h1> Welcome, {usr}</h1>"
 
 @app.route('/register', methods=["POST", 'GET'])
 def register():
@@ -62,20 +62,20 @@ def register():
             flash("Username and password cannot be empty.")
             return redirect(url_for("register"))
 
-        elif(pw != confirmPW): #confirm password matches 
+        elif(pw != confirmPW): #confirm password matches
             flash("Passwords do not match", "error")
             return redirect(url_for("register"))
-        
+
         try:
             conn = sqlite3.connect("myGymClub.db")
-            db.add_user_record(conn, user, pw, 0)  # 0 = not admin
+            db.add_user_record(conn, user, pw, 0, 0)  # 0 = not admin
             conn.close()
             flash("Account created successfully.")
             return redirect(url_for("user", usr=user)) #redirect to user welcome
         except sqlite3.IntegrityError:
             flash("Username already exists.")
             return redirect(url_for("register"))
-        
+
     else:
         return render_template("register.html")
 
