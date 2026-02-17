@@ -8,15 +8,19 @@ The 'runner.py' will execute the 'run' function. This function will start the ap
 
 The myGymClub.db database generated currently includes the tables:
 
-User_Records(username, password, isAdmin):
+User_Records(username, password, isAdmin, experience):
 
-    username - text
+    username - text not null
 
-    password - text
+    password - text not null
 
-    isAdmin - integer
+    isAdmin - integer not null
 
-Goals(exercise_name, style, reps, rep_type, sets, frequency, freq_type, memo):
+    experience - integer not null
+
+Goals(username, exercise_name, style, reps, rep_type, sets, frequency, freq_type, memo):
+
+    username - text not null
 
     exercise_name - text not null
 
